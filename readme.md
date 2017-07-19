@@ -19,7 +19,7 @@ curl trusted-app:secret@localhost:8080/oauth/token -d "grant_type=password&usern
 <br/>
 <strong>To get a refresh token</strong><br/>
 <code>
-curl trusted-app:secret@localhost:8080/oauth/token -d "grant_type=access_token&access_tokem=[ACCESS_TOKEN]" | jq
+curl trusted-app:secret@localhost:8080/oauth/token -d "grant_type=refresh_token&jti=[JTI]&refresh_token=[REFRESH_TOKEN]" | jq
 </code>
 
 <br/>

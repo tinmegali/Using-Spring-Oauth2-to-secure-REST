@@ -1,22 +1,30 @@
 package com.tinmegali.oauth2.security;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.filter.GenericFilterBean;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @Configuration
 @EnableResourceServer
-//@EnableGlobalMethodSecurity(prePostEnabled=true)
 public class ResourceConfig extends ResourceServerConfigurerAdapter {
 
     @Value("${security.oauth2.resource.id}")
@@ -39,11 +47,13 @@ public class ResourceConfig extends ResourceServerConfigurerAdapter {
                 .resourceId(resourceId)
                 .tokenServices(tokenServices)
                 .tokenStore(tokenStore);
+
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
+
                 .requestMatcher(new OAuthRequestedMatcher())
                 .csrf().disable()
                 .anonymous().disable()
@@ -55,7 +65,7 @@ public class ResourceConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/api/me").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/api/admin").hasRole("ADMIN")
                 // use the full name when specifying authority access
-                .antMatchers("/api/register").hasAuthority("ROLE_REGISTER")
+                .antMatchers("/api/registerUser").hasAuthority("ROLE_REGISTER")
                 // restricting all access to /api/** to authenticated users
                 .antMatchers("/api/**").authenticated();
     }
